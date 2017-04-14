@@ -25,8 +25,6 @@
 #define BOOST_TEST_MODULE TestBasics
 #include <boost/test/unit_test.hpp>
 
-#include <complex>
-
 #include <boost/compute/core.hpp>
 #include <boost/compute/system.hpp>
 #include <boost/compute/command_queue.hpp>
