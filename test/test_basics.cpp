@@ -50,7 +50,51 @@ BOOST_FIXTURE_TEST_SUITE(complex_numbers_test, OpenCLContext)
 
 BOOST_AUTO_TEST_CASE(test_create)
 {
+    namespace bc = boost::compute;
+    boost::compute::vector<bc::float_> reals(context);
+    boost::compute::vector<bc::float_> imags(context);
 
+    reals.push_back(bc::float_(1.0f), queue);
+    reals.push_back(bc::float_(2.0f), queue);
+    reals.push_back(bc::float_(-3.0f), queue);
+    reals.push_back(bc::float_(4.0f), queue);
+
+    imags.push_back(bc::float_(-1.0f), queue);
+    imags.push_back(bc::float_(2.0f), queue);
+    imags.push_back(bc::float_(3.0f), queue);
+    imags.push_back(bc::float_(-4.0f), queue);
+
+    boost::compute::vector<bc::float2_> complexs(size_t(4), context);
+
+    std::string source = "#include \"clcomplex.h\"\n";
+    source += BOOST_COMPUTE_STRINGIZE_SOURCE(        
+        __kernel void test_kernel(__global float * reals,
+                                  __global float * imags,
+                                  __global float2 * complexs)
+        {
+            const uint i = get_global_id(0);
+            complexs[i] = clcomplexf(reals[i], imags[i]);
+        }
+    );
+
+    std::string options = "-I" + std::string(OPENCL_COMPLEX_MATH_DIR);
+    bc::program program = bc::program::build_with_source(
+        source, context, options
+    );
+    bc::kernel k = program.create_kernel("test_kernel");
+
+    k.set_args(
+        reals.get_buffer(),
+        imags.get_buffer(),
+        complexs.get_buffer()
+    );
+
+    queue.enqueue_1d_range_kernel(k, 0, complexs.size(), 0).wait();
+
+    BOOST_CHECK_EQUAL(bc::float2_(complexs[0]), bc::float2_(1.0f, -1.0f));
+    BOOST_CHECK_EQUAL(bc::float2_(complexs[1]), bc::float2_(2.0f, 2.0f));
+    BOOST_CHECK_EQUAL(bc::float2_(complexs[2]), bc::float2_(-3.0f, 3.0f));
+    BOOST_CHECK_EQUAL(bc::float2_(complexs[3]), bc::float2_(4.0f, -4.0f));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
