@@ -31,7 +31,7 @@
 #include <boost/compute/utility/source.hpp>
 #include <boost/compute/container/vector.hpp>
 
-struct OpenCLContext 
+struct OpenCLContext
 {
     boost::compute::device        device;
     boost::compute::context       context;
@@ -65,13 +65,13 @@ BOOST_AUTO_TEST_CASE(test_create)
     boost::compute::vector<bc::float2_> complexs(size_t(4), context);
 
     std::string source = "#include \"clcomplex.h\"\n";
-    source += BOOST_COMPUTE_STRINGIZE_SOURCE(        
+    source += BOOST_COMPUTE_STRINGIZE_SOURCE(
         __kernel void test_kernel(__global float * reals,
                                   __global float * imags,
                                   __global float2 * complexs)
         {
             const uint i = get_global_id(0);
-            complexs[i] = clcomplexf(reals[i], imags[i]);
+            complexs[i] = complexf(reals[i], imags[i]);
         }
     );
 

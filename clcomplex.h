@@ -25,7 +25,8 @@
 #ifndef OPENCL_COMPLEX_MATH
 #define OPENCL_COMPLEX_MATH
 
-#define fname(name, sufix) cl##name##sufix
+#define CONCAT(x, y) x##y
+#define FNAME(name, sufix) c##name##sufix
 
 // float2
 #define clrealf(complex) complex.x;
@@ -36,11 +37,44 @@
 #define climag(complex) complex.y;
 
 #define OPENCL_COMPLEX_MATH_FUNCS(complex_type, real_type, func_sufix) \
-    complex_type fname(complex, func_sufix)(real_type r, real_type i) \
+    complex_type CONCAT(complex, func_sufix)(real_type r, real_type i) \
     { \
         return (complex_type)(r, i); \
+    } \
+    complex_type FNAME(add, func_sufix)(complex_type x, complex_type y) \
+    { \
+        return x + y; \
+    } \
+    \
+    complex_type FNAME(sub, func_sufix)(complex_type x, complex_type y) \
+    { \
+        return x - y; \
+    } \
+    \
+    complex_type FNAME(abs, func_sufix)(complex_type z) \
+    { \
+        return length(z); \
+    } \
+    \
+    complex_type FNAME(arg, func_sufix)(complex_type z) \
+    { \
+        return atan2(z.y, z.x); \
+    } \
+    \
+    complex_type FNAME(conj, func_sufix)(complex_type z) \
+    { \
+        return (complex_type)(z.x, -z.y); \
+    } \
+    \
+    complex_type FNAME(proj, func_sufix)(complex_type z) \
+    { \
+        if(isinf(z.x) || isinf(z.y)) \
+        { \
+            return (complex_type)(INFINITY, (copysign(0.0f, z.y))); \
+        } \
+        return z; \
     }
-    
+
 // float complex
 typedef float2 cfloat;
 OPENCL_COMPLEX_MATH_FUNCS(float2, float, f)
@@ -48,11 +82,12 @@ OPENCL_COMPLEX_MATH_FUNCS(float2, float, f)
 // double complex
 #ifdef cl_khr_fp64
 #   ifdef OPENCL_COMPLEX_MATH_USE_DOUBLE
-#       pragma OPENCL EXTENSION cl_khr_fp64 : enable       
+#       pragma OPENCL EXTENSION cl_khr_fp64 : enable
         typedef double2 cdouble;
-        OPENCL_COMPLEX_MATH_FUNCS(double2, double,)        
+        OPENCL_COMPLEX_MATH_FUNCS(double2, double,)
 #   endif
-#endif 
+#endif
 
-#undef fname
+#undef FNAME
+#undef CONCAT
 #endif // OPENCL_COMPLEX_MATH
