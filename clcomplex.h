@@ -25,4 +25,34 @@
 #ifndef OPENCL_COMPLEX_MATH
 #define OPENCL_COMPLEX_MATH
 
+#define fname(name, sufix) cl##name##sufix
+
+// float2
+#define clrealf(complex) complex.x;
+#define climagf(complex) complex.y;
+
+// double2
+#define clreal(complex) complex.x;
+#define climag(complex) complex.y;
+
+#define OPENCL_COMPLEX_MATH_FUNCS(complex_type, real_type, func_sufix) \
+    complex_type fname(complex, func_sufix)(real_type r, real_type i) \
+    { \
+        return (complex_type)(r, i); \
+    }
+    
+// float complex
+typedef float2 cfloat;
+OPENCL_COMPLEX_MATH_FUNCS(float2, float, f)
+
+// double complex
+#ifdef cl_khr_fp64
+#   ifdef OPENCL_COMPLEX_MATH_USE_DOUBLE
+#       pragma OPENCL EXTENSION cl_khr_fp64 : enable       
+        typedef double2 cdouble;
+        OPENCL_COMPLEX_MATH_FUNCS(double2, double,)        
+#   endif
+#endif 
+
+#undef fname
 #endif // OPENCL_COMPLEX_MATH
