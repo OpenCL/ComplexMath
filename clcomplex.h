@@ -41,6 +41,7 @@
     { \
         return (complex_type)(r, i); \
     } \
+    \
     complex_type FNAME(add, func_sufix)(complex_type x, complex_type y) \
     { \
         return x + y; \
@@ -59,6 +60,28 @@
     real_type FNAME(arg, func_sufix)(complex_type z) \
     { \
         return atan2(z.y, z.x); \
+    } \
+    \
+    complex_type FNAME(mul, func_sufix)(complex_type z1, complex_type z2) \
+    { \
+        real_type x1 = z1.x; \
+        real_type y1 = z1.y; \
+        real_type x2 = z2.x; \
+        real_type y2 = z2.y; \
+        return (complex_type)(x1 * x2 - y1 * y2, x1 * y2 + x2 * y1); \
+    } \
+    \
+    complex_type FNAME(div, func_sufix)(complex_type z1, complex_type z2) \
+    { \
+        real_type x1 = z1.x; \
+        real_type y1 = z1.y; \
+        real_type x2 = z2.x; \
+        real_type y2 = z2.y; \
+        real_type iabs_z2 = CONCAT(1.0, func_sufix) / CONCAT(cabs, func_sufix)(z2); \
+        return (complex_type)( \
+            ((x1 * x2 * iabs_z2) + (y1 * y2 * iabs_z2)) * iabs_z2, \
+            ((y1 * x2 * iabs_z2) - (x1 * y2 * iabs_z2)) * iabs_z2  \
+        ); \
     } \
     \
     complex_type FNAME(conj, func_sufix)(complex_type z) \
