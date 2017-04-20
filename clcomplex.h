@@ -73,6 +73,21 @@
             return (complex_type)(INFINITY, (copysign(0.0f, z.y))); \
         } \
         return z; \
+    } \
+    \
+    complex_type FNAME(exp, func_sufix)(complex_type z) \
+    { \
+        /* The complex exponential function e^z for z = x+i*y */ \
+        /* equals to e^x * cis(y), */ \
+        /* or, e^x * (cos(y) + i*sin(y)) */ \
+        real_type expx = exp(z.x); \
+        return (complex_type)(expx * cos(z.y), expx * sin(z.y)); \
+    } \
+    \
+    complex_type FNAME(log, func_sufix)(complex_type z) \
+    { \
+        /* log(z) = log(abs(z)) + i * arg(z)  */ \
+        return (complex_type)(log(CONCAT(cabs, func_sufix)(z)),CONCAT(carg, func_sufix)(z)); \
     }
 
 // float complex
