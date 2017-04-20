@@ -51,12 +51,12 @@
         return x - y; \
     } \
     \
-    complex_type FNAME(abs, func_sufix)(complex_type z) \
+    real_type FNAME(abs, func_sufix)(complex_type z) \
     { \
         return length(z); \
     } \
     \
-    complex_type FNAME(arg, func_sufix)(complex_type z) \
+    real_type FNAME(arg, func_sufix)(complex_type z) \
     { \
         return atan2(z.y, z.x); \
     } \
