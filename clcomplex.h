@@ -77,7 +77,7 @@
         real_type y1 = z1.y; \
         real_type x2 = z2.x; \
         real_type y2 = z2.y; \
-        real_type iabs_z2 = CONCAT(1.0, func_sufix) / CONCAT(cabs, func_sufix)(z2); \
+        real_type iabs_z2 = CONCAT(1.0, func_sufix) / FNAME(abs, func_sufix)(z2); \
         return (complex_type)( \
             ((x1 * x2 * iabs_z2) + (y1 * y2 * iabs_z2)) * iabs_z2, \
             ((y1 * x2 * iabs_z2) - (x1 * y2 * iabs_z2)) * iabs_z2  \
@@ -110,17 +110,17 @@
     complex_type FNAME(log, func_sufix)(complex_type z) \
     { \
         /* log(z) = log(abs(z)) + i * arg(z)  */ \
-        return (complex_type)(log(CONCAT(cabs, func_sufix)(z)),CONCAT(carg, func_sufix)(z)); \
+        return (complex_type)(log(FNAME(abs, func_sufix)(z)),FNAME(arg, func_sufix)(z)); \
     } \
     \
     complex_type FNAME(pow, func_sufix)(complex_type z1, complex_type z2) \
     { \
         /* (z1)^(z2) = exp(z2 * log(z1)) = cexp(mul(z2, clog(z1))) */ \
         return \
-            CONCAT(cexp, func_sufix)( \
-                CONCAT(cmul, func_sufix)( \
+            FNAME(exp, func_sufix)( \
+                FNAME(mul, func_sufix)( \
                     z2, \
-                    CONCAT(clog, func_sufix)(z1) \
+                    FNAME(log, func_sufix)(z1) \
                 ) \
             ); \
     } \
@@ -137,12 +137,56 @@
         } \
         else \
         { \
-            real_type t = sqrt(2 * CONCAT(cabs, func_sufix)(z) + fabs(x)); \
+            real_type t = sqrt(2 * FNAME(abs, func_sufix)(z) + fabs(x)); \
             real_type u = t / 2; \
             return x > CONCAT(0.0, func_sufix) \
                 ? (complex_type)(u, y / t) \
                 : (complex_type)(fabs(y) / t, y < CONCAT(0.0, func_sufix) ? -u : u); \
         } \
+    } \
+    \
+    complex_type FNAME(sin, func_sufix)(complex_type z) \
+    { \
+        const real_type x = z.x; \
+        const real_type y = z.y; \
+        return (complex_type)(sin(x) * cosh(y), cos(x) * sinh(y)); \
+    } \
+    \
+    complex_type FNAME(sinh, func_sufix)(complex_type z) \
+    { \
+        const real_type x = z.x; \
+        const real_type y = z.y; \
+        return (complex_type)(sinh(x) * cos(y), cosh(x) * sin(y)); \
+    } \
+    \
+    complex_type FNAME(cos, func_sufix)(complex_type z) \
+    { \
+        const real_type x = z.x; \
+        const real_type y = z.y; \
+        return (complex_type)(cos(x) * cosh(y), -sin(x) * sinh(y)); \
+    } \
+    \
+    complex_type FNAME(cosh, func_sufix)(complex_type z) \
+    { \
+        const real_type x = z.x; \
+        const real_type y = z.y; \
+        return (complex_type)(cosh(x) * cos(y), sinh(x) * sin(y)); \
+    } \
+    \
+    complex_type FNAME(tan, func_sufix)(complex_type z) \
+    { \
+        return FNAME(div, func_sufix)( \
+            FNAME(sin, func_sufix)(z), \
+            FNAME(cos, func_sufix)(z) \
+        ); \
+    } \
+    \
+    complex_type FNAME(tanh, func_sufix)(complex_type z) \
+    { \
+        return FNAME(div, func_sufix)( \
+            FNAME(sinh, func_sufix)(z), \
+            FNAME(cosh, func_sufix)(z) \
+        ); \
     }
 
 // float complex
