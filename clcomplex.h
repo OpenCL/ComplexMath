@@ -111,6 +111,38 @@
     { \
         /* log(z) = log(abs(z)) + i * arg(z)  */ \
         return (complex_type)(log(CONCAT(cabs, func_sufix)(z)),CONCAT(carg, func_sufix)(z)); \
+    } \
+    \
+    complex_type FNAME(pow, func_sufix)(complex_type z1, complex_type z2) \
+    { \
+        /* (z1)^(z2) = exp(z2 * log(z1)) = cexp(mul(z2, clog(z1))) */ \
+        return \
+            CONCAT(cexp, func_sufix)( \
+                CONCAT(cmul, func_sufix)( \
+                    z2, \
+                    CONCAT(clog, func_sufix)(z1) \
+                ) \
+            ); \
+    } \
+    \
+    complex_type FNAME(sqrt, func_sufix)(complex_type z) \
+    { \
+        /*  */ \
+        real_type x = z.x; \
+        real_type y = z.y; \
+        if(x == CONCAT(0.0, func_sufix)) \
+        { \
+            real_type t = sqrt(fabs(y) / 2); \
+            return (complex_type)(t, y < CONCAT(0.0, func_sufix) ? -t : t); \
+        } \
+        else \
+        { \
+            real_type t = sqrt(2 * CONCAT(cabs, func_sufix)(z) + fabs(x)); \
+            real_type u = t / 2; \
+            return x > CONCAT(0.0, func_sufix) \
+                ? (complex_type)(u, y / t) \
+                : (complex_type)(fabs(y) / t, y < CONCAT(0.0, func_sufix) ? -u : u); \
+        } \
     }
 
 // float complex
