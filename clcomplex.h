@@ -36,7 +36,7 @@
 #define clreal(complex) complex.x;
 #define climag(complex) complex.y;
 
-#define OPENCL_COMPLEX_MATH_FUNCS(complex_type, real_type, func_sufix) \
+#define OPENCL_COMPLEX_MATH_FUNCS(complex_type, real_type, func_sufix, math_consts_sufix) \
     complex_type CONCAT(complex, func_sufix)(real_type r, real_type i) \
     { \
         return (complex_type)(r, i); \
@@ -187,18 +187,88 @@
             FNAME(sinh, func_sufix)(z), \
             FNAME(cosh, func_sufix)(z) \
         ); \
+    } \
+    \
+    complex_type FNAME(asinh, func_sufix)(complex_type z) \
+    { \
+        complex_type t = (complex_type)( \
+            (z.x - z.y) * (z.x + z.y) + CONCAT(1.0, func_sufix), \
+            CONCAT(2.0, func_sufix) * z.x * z.y \
+        ); \
+        t = FNAME(sqrt, func_sufix)(t) + z; \
+        return FNAME(log, func_sufix)(t); \
+    } \
+    \
+    complex_type FNAME(asin, func_sufix)(complex_type z) \
+    { \
+        complex_type t = (complex_type)(-z.y, z.x); \
+        t = FNAME(asinh, func_sufix)(t); \
+        return (complex_type)(t.y, -t.x); \
+    } \
+    \
+    complex_type FNAME(acosh, func_sufix)(complex_type z) \
+    { \
+        return \
+            CONCAT(2.0, func_sufix) * FNAME(log, func_sufix)( \
+                FNAME(sqrt, func_sufix)( \
+                    CONCAT(0.5, func_sufix) * (z + CONCAT(1.0, func_sufix)) \
+                ) \
+                + FNAME(sqrt, func_sufix)( \
+                    CONCAT(0.5, func_sufix) * (z - CONCAT(1.0, func_sufix)) \
+                ) \
+            ); \
+    } \
+    \
+    complex_type FNAME(acos, func_sufix)(complex_type z) \
+    { \
+        complex_type t = FNAME(asin, func_sufix)(z);\
+        return (complex_type)( \
+            CONCAT(M_PI_2, math_consts_sufix) - t.x, -t.y \
+        ); \
+    } \
+    \
+    complex_type FNAME(atanh, func_sufix)(complex_type z) \
+    { \
+        const real_type zy2 = z.y * z.y; \
+        real_type n = CONCAT(1.0, func_sufix) + z.x; \
+        real_type d = CONCAT(1.0, func_sufix) - z.x; \
+        n = zy2 + n * n; \
+        d = zy2 + d * d; \
+        return (complex_type)( \
+            CONCAT(0.25, func_sufix) * (log(n) - log(d)), \
+            CONCAT(0.5, func_sufix) * atan2( \
+                CONCAT(2.0, func_sufix) * z.y, \
+                CONCAT(1.0, func_sufix) - zy2 - (z.x * z.x) \
+            ) \
+        ); \
+    } \
+    \
+    complex_type FNAME(atan, func_sufix)(complex_type z) \
+    { \
+        const real_type zx2 = z.x * z.x; \
+        real_type n = z.y + CONCAT(1.0, func_sufix); \
+        real_type d = z.y - CONCAT(1.0, func_sufix); \
+        n = zx2 + n * n; \
+        d = zx2 + d * d; \
+        return (complex_type)( \
+            CONCAT(0.5, func_sufix) * atan2( \
+                CONCAT(2.0, func_sufix) * z.x, \
+                CONCAT(1.0, func_sufix) - zx2 - (z.y * z.y) \
+            ), \
+            CONCAT(0.25, func_sufix) * (log(n / d)) \
+        ); \
     }
 
 // float complex
 typedef float2 cfloat;
-OPENCL_COMPLEX_MATH_FUNCS(float2, float, f)
+OPENCL_COMPLEX_MATH_FUNCS(float2, float, f, _F)
 
 // double complex
 #ifdef cl_khr_fp64
 #   ifdef OPENCL_COMPLEX_MATH_USE_DOUBLE
 #       pragma OPENCL EXTENSION cl_khr_fp64 : enable
         typedef double2 cdouble;
-        OPENCL_COMPLEX_MATH_FUNCS(double2, double,)
+        OPENCL_COMPLEX_MATH_FUNCS(double2, double, , )
 #   endif
 #endif
 
