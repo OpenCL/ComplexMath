@@ -98,6 +98,22 @@
         return z; \
     } \
     \
+    real_type FNAME(norm, func_sufix)(complex_type z) \
+    { \
+        /* Returns the squared magnitude of the complex number z. */ \
+        /* The norm calculated by this function is also known as */ \
+        /* field norm or absolute square. */ \
+        real_type x = z.x; \
+        real_type y = z.y; \
+        return x * x + y * y; \
+    } \
+    \
+    complex_type FNAME(polar, func_sufix)(real_type r, real_type theta) \
+    { \
+        /* Returns a complex number with magnitude r and phase angle theta. */ \
+        return (complex_type)(r * cos(theta), r * sin(theta)); \
+    } \
+    \
     complex_type FNAME(exp, func_sufix)(complex_type z) \
     { \
         /* The complex exponential function e^z for z = x+i*y */ \
