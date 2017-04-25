@@ -129,6 +129,11 @@
         return (complex_type)(log(FNAME(abs, func_sufix)(z)),FNAME(arg, func_sufix)(z)); \
     } \
     \
+    complex_type FNAME(log10, func_sufix)(complex_type z) \
+    { \
+        return FNAME(log, func_sufix)(z) / log(CONCAT(10.0, func_sufix)); \
+    } \
+    \
     complex_type FNAME(pow, func_sufix)(complex_type z1, complex_type z2) \
     { \
         /* (z1)^(z2) = exp(z2 * log(z1)) = cexp(mul(z2, clog(z1))) */ \
