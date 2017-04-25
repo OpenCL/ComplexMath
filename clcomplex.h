@@ -52,6 +52,16 @@
         return x - y; \
     } \
     \
+    complex_type FNAME(add_real, func_sufix)(complex_type z, real_type r) \
+    { \
+        return (complex_type)(z.x + r, z.y); \
+    } \
+    \
+    complex_type FNAME(sub_real, func_sufix)(complex_type z, real_type r) \
+    { \
+        return (complex_type)(z.x - r, z.y); \
+    } \
+    \
     real_type FNAME(abs, func_sufix)(complex_type z) \
     { \
         return length(z); \
@@ -82,6 +92,16 @@
             ((x1 * x2 * iabs_z2) + (y1 * y2 * iabs_z2)) * iabs_z2, \
             ((y1 * x2 * iabs_z2) - (x1 * y2 * iabs_z2)) * iabs_z2  \
         ); \
+    } \
+    \
+    complex_type FNAME(mul_real, func_sufix)(complex_type z, real_type r) \
+    { \
+        return z * r; \
+    } \
+    \
+    complex_type FNAME(div_real, func_sufix)(complex_type z, real_type r) \
+    { \
+        return z / r; \
     } \
     \
     complex_type FNAME(conj, func_sufix)(complex_type z) \
