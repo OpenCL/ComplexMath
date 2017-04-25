@@ -1,6 +1,7 @@
 # Complex Math for OpenCL
 
-ToDo
+Complex number types (`cdouble`, `cfloat`) and complex math for OpenCL C.
+Project is a part of [OpenCL.org](http://opencl.org/) initiative.
 
 ## Run tests
 
