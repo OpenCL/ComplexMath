@@ -113,7 +113,7 @@
     { \
         if(isinf(z.x) || isinf(z.y)) \
         { \
-            return (complex_type)(INFINITY, (copysign(0.0f, z.y))); \
+            return (complex_type)(INFINITY, (copysign(CONCAT(0.0, func_sufix), z.y))); \
         } \
         return z; \
     } \
